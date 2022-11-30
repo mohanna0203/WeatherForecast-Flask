@@ -114,15 +114,17 @@ def index_post():
     if new_city:
         existing_city = city.query.filter_by(name=new_city).first()
         
-        if not existing_city:
-            new_city_data = get_weather_data(new_city)
-            if new_city_data['cod'] == 200:
-                new_city_obj = city(name=new_city)
+        if existing_city:
+            db.session.delete(existing_city)
+            db.session.commit()
+        new_city_data = get_weather_data(new_city)
+        if new_city_data['cod'] == 200:
+            new_city_obj = city(name=new_city)
 
-                db.session.add(new_city_obj)
-                db.session.commit()
-            else:
-                return redirect(url_for("error"))
+            db.session.add(new_city_obj)
+            db.session.commit()
+        else:
+            return redirect(url_for("error"))
 
     if err_msg:
          return redirect(url_for("error"))
